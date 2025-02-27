@@ -30,8 +30,7 @@ video-transcoding-system/
 │   ├── logger/                # ระบบบันทึกล็อก
 │   └── config/                # ระบบการตั้งค่า
 ├── migrations/                # ไฟล์ SQL migrations
-├── scripts/                   # สคริปต์อัตโนมัติต่างๆ
-└── frontend/                  # ส่วน Frontend (React+Vite+Tailwind)
+└── scripts/                   # สคริปต์อัตโนมัติต่างๆ
 ```
 
 ## ข้อกำหนดเบื้องต้น
