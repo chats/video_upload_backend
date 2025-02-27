@@ -36,11 +36,10 @@ video-transcoding-system/
 
 ## ข้อกำหนดเบื้องต้น
 
-- Go 1.16 หรือสูงกว่า
+- Go 1.23 หรือสูงกว่า
 - FFmpeg และ FFprobe
 - PostgreSQL
 - Minio หรือ AWS S3
-- Node.js 14 หรือสูงกว่า (สำหรับ Frontend)
 
 ## การติดตั้ง
 
