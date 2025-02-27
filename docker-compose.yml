@@ -1,0 +1,114 @@
+#version: '3.8'
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: video-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - APP_ENV=production
+      - LOG_LEVEL=info
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=video_system
+      - DB_SSL_MODE=disable
+      - STORAGE_ACCESS_KEY=minioadmin
+      - STORAGE_SECRET_KEY=minioadmin
+      - STORAGE_REGION=us-east-1
+      - STORAGE_BUCKET_NAME=videos
+      - STORAGE_ENDPOINT=http://minio:9000
+      - STORAGE_USE_SSL=false
+      - FFMPEG_PATH=/usr/bin/ffmpeg
+      - FFPROBE_PATH=/usr/bin/ffprobe
+      - MAX_CONCURRENT_TRANSCODES=2
+      - SEGMENT_DURATION=10
+      - JWT_SECRET=change-this-in-production
+      - JWT_EXPIRY=24h
+      - ALLOW_ORIGINS=*
+    volumes:
+      - ./tmp:/app/tmp
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - minio
+    networks:
+      - video-network
+
+  # PostgreSQL Service
+  postgres:
+    image: postgres:14-alpine
+    container_name: video-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=video_system
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - video-network
+
+  # Minio Service (S3 Compatible Storage)
+  minio:
+    image: minio/minio:latest
+    container_name: video-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - video-network
+
+  # Create Minio Bucket
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc config host add minio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb minio/videos --ignore-existing;
+      /usr/bin/mc policy set public minio/videos;
+      exit 0;
+      "
+    networks:
+      - video-network
+
+  # Frontend Service
+#  frontend:
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    container_name: video-frontend
+#    restart: unless-stopped
+#    ports:
+#      - "3000:80"
+#    depends_on:
+#      - api
+#    networks:
+#      - video-network
+
+volumes:
+  postgres-data:
+  minio-data:
+
+networks:
+  video-network:
+    driver: bridge
