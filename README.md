@@ -113,6 +113,24 @@ docker-compose up -d
 - `GET /api/v1/videos/:id` - ดึงข้อมูลวิดีโอตาม ID
 - `GET /api/v1/users/videos` - ดึงรายการวิดีโอของผู้ใช้
 
+### User API Endpoints
+```
+# Public Routes
+POST /api/v1/auth/register     - สมัครสมาชิกใหม่
+POST /api/v1/auth/login        - เข้าสู่ระบบ
+
+# Protected Routes (ต้องการ Authentication)
+GET /api/v1/users/me           - ดึงข้อมูลผู้ใช้ปัจจุบัน
+PUT /api/v1/users/profile      - อัปเดตโปรไฟล์ผู้ใช้
+PUT /api/v1/users/password     - เปลี่ยนรหัสผ่าน
+
+# Admin Routes (ต้องการสิทธิ์ผู้ดูแลระบบ)
+GET /api/v1/users              - ดึงรายการผู้ใช้ทั้งหมด
+DELETE /api/v1/users/:id       - ลบผู้ใช้
+PUT /api/v1/users/:id/role     - อัปเดตสิทธิ์ผู้ใช้
+```
+
+
 ## การพัฒนา
 
 ### การทดสอบ
@@ -143,27 +161,6 @@ make docker-run
 ```bash
 make migrate
 ```
-
-
-## User Routes
-
-API Endpoints
-```
-# Public Routes
-POST /api/v1/auth/register     - สมัครสมาชิกใหม่
-POST /api/v1/auth/login        - เข้าสู่ระบบ
-
-# Protected Routes (ต้องการ Authentication)
-GET /api/v1/users/me           - ดึงข้อมูลผู้ใช้ปัจจุบัน
-PUT /api/v1/users/profile      - อัปเดตโปรไฟล์ผู้ใช้
-PUT /api/v1/users/password     - เปลี่ยนรหัสผ่าน
-
-# Admin Routes (ต้องการสิทธิ์ผู้ดูแลระบบ)
-GET /api/v1/users              - ดึงรายการผู้ใช้ทั้งหมด
-DELETE /api/v1/users/:id       - ลบผู้ใช้
-PUT /api/v1/users/:id/role     - อัปเดตสิทธิ์ผู้ใช้
-```
-
 
 
 ## ลิขสิทธิ์
